@@ -275,6 +275,12 @@ func main() {
 
 		// 准备发送应用消息所需参数
 		postData := InitJsonData(msgType)
+
+		// 允许请求参数覆盖touser，实现动态指定接收人
+		reqToUser := req.FormValue("touser")
+		if reqToUser != "" {
+			postData.ToUser = reqToUser
+		}
 		
 		// 根据消息类型设置不同的字段
 		if msgType == "markdown" {
