@@ -47,13 +47,17 @@ type Msg struct {
 type Pic struct {
 	MediaId string `json:"media_id"`
 }
+type Markdown struct {
+	Content string `json:"content"`
+}
 type JsonData struct {
-	ToUser                 string `json:"touser"`
-	AgentId                string `json:"agentid"`
-	MsgType                string `json:"msgtype"`
-	DuplicateCheckInterval int    `json:"duplicate_check_interval"`
-	Text                   Msg    `json:"text"`
-	Image                  Pic    `json:"image"`
+	ToUser                 string    `json:"touser"`
+	AgentId                string    `json:"agentid"`
+	MsgType                string    `json:"msgtype"`
+	DuplicateCheckInterval int       `json:"duplicate_check_interval"`
+	Text                   Msg       `json:"text,omitempty"`
+	Image                  Pic       `json:"image,omitempty"`
+	Markdown               Markdown  `json:"markdown,omitempty"`
 }
 
 // GetEnvDefault 获取配置信息，未获取到则取默认值
@@ -271,8 +275,16 @@ func main() {
 
 		// 准备发送应用消息所需参数
 		postData := InitJsonData(msgType)
-		postData.Text = Msg{
-			Content: msgContent,
+		
+		// 根据消息类型设置不同的字段
+		if msgType == "markdown" {
+			postData.Markdown = Markdown{
+				Content: msgContent,
+			}
+		} else {
+			postData.Text = Msg{
+				Content: msgContent,
+			}
 		}
 		postData.Image = Pic{
 			MediaId: mediaId,
